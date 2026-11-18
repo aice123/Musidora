@@ -1,0 +1,56 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "your_model.safetensors" }
+  },
+  "2": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "vae-ft-mse-840000-ema-pruned.safetensors" }
+  },
+  "3": {
+    "class_type": "CLIPSetLastLayer",
+    "inputs": { "clip": ["1", 1], "stop_at_clip_layer": -2 }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "clip": ["3", 0], "text": "a photo of a landscape" }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "clip": ["3", 0], "text": "low quality, watermark, text" }
+  },
+  "6": {
+    "class_type": "EmptyLatentImage",
+    "inputs": { "width": 512, "height": 768, "batch_size": 1 }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "seed": 12345,
+      "steps": 30,
+      "cfg": 5.5,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "karras",
+      "positive": ["4", 0],
+      "negative": ["5", 0],
+      "latent_image": ["6", 0],
+      "denoise": 1.0
+    }
+  },
+  "8": { "class_type": "VAEDecode", "inputs": { "samples": ["7", 0], "vae": ["2", 0] } },
+  "9": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": ["8", 0],
+      "upscale_method": "lanczos",
+      "width": 768,
+      "height": 1152,
+      "crop": "disabled"
+    }
+  },
+  "10": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["9", 0], "filename_prefix": "musidora" }
+  }
+}

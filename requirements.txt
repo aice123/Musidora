@@ -1,0 +1,5 @@
+﻿# GUI 随 Python 自带，无需额外安装
+# 只有相似度与人脸计数功能需要下面两个
+# insightface>=0.7.3
+# opencv-python>=4.8
+# numpy>=1.24
